@@ -2,19 +2,19 @@
   "todo" : [
     {
       "item": "Call plumber",
-      "completed": "false",
+      "completed": "false"
     },
     {
       "item": "Do laundry",
-      "completed": "false",
+      "completed": "false"
     },
     {
       "item": "Buy groceries",
-      "completed": "true",
+      "completed": "true"
     },
     {
       "item": "Call school",
-      "completed": "false",
+      "completed": "false"
     }
   ]
 }
