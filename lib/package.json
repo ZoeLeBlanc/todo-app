@@ -1,0 +1,33 @@
+{
+  "name": "todoapp",
+  "version": "1.0.0",
+  "description": "To Do app for NSS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZoeLeBlanc/todo-app.git"
+  },
+  "keywords": [
+    "weather",
+    "nss"
+  ],
+  "author": "Zoe LeBlanc <zgleblanc@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ZoeLeBlanc/todo-app/issues"
+  },
+  "homepage": "https://github.com/ZoeLeBlanc/todo-app#readme",
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-contrib-jshint": "^1.0.0",
+    "grunt-browserify": "^5.0.0",
+    "grunt-contrib-nodeunit": "^1.0.0",
+    "grunt-contrib-uglify": "^2.0.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-sass": "^1.2.1",
+    "matchdep": "^1.0.1"
+  }
+}
