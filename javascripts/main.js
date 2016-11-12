@@ -1,7 +1,8 @@
 "use strict";
 let apiKeys = {};
+let uid = "";
 function putTodoInDOM(){
-	FbAPI.getTodos(apiKeys).then((items)=> {
+	FbAPI.getTodos(apiKeys, uid).then((items)=> {
 			$("#completed-tasks").html("");
 			$("#incomplete-tasks").html("");
 			console.log("items from firebase", items);
@@ -18,6 +19,15 @@ function putTodoInDOM(){
       		});
 		});
 }
+function createLogoutButton(){
+	FbAPI.getUser(apiKeys, uid).then( (userResponse)=>{
+		$("#logout-container").html("");
+		console.log("userResponse", userResponse);
+		let currentUsername = userResponse.username;
+		let logoutButton = `<button class="btn btn-danger btn-md" id="logoutButton">Logout ${currentUsername}</button>`;
+		$("#logout-container").append(logoutButton);
+	});
+}
 
 $(document).ready( ()=> {
 	//get API keys
@@ -25,14 +35,14 @@ $(document).ready( ()=> {
 		console.log("keys", keys);
 		apiKeys = keys;
 		firebase.initializeApp(keys);
-		putTodoInDOM();
 	});
 	//Add new todo item on enterkey
 	$("#add-todo-text").on("keypress", (event)=>{
 		if (event.which === 13){
 			let newItem = {
 			"task": $("#add-todo-text").val(),
-			"isCompleted": "false"
+			"isCompleted": false,
+			"uid": uid
 			};
 			FbAPI.addTodo(apiKeys, newItem).then( ()=>{
 				putTodoInDOM();
@@ -44,7 +54,8 @@ $(document).ready( ()=> {
 	$("#add-todo-button").on("click", function(event){
 		let newItem = {
 			"task": $("#add-todo-text").val(),
-			"isCompleted": false
+			"isCompleted": false,
+			"uid": uid
 		};
 		FbAPI.addTodo(apiKeys, newItem).then( ()=>{
 			putTodoInDOM();
@@ -69,7 +80,8 @@ $(document).ready( ()=> {
 			let itemId = $(this).data("fbid");
 			let editedItem = {
 				"task": parent.find(".inputTask").val(),
-				"isCompleted": false		
+				"isCompleted": false,
+				"uid": uid		
 			};
 			FbAPI.editTodo(apiKeys, itemId, editedItem).then( (response)=>{
 				console.log("response from Edit", response);
@@ -85,101 +97,69 @@ $(document).ready( ()=> {
 		let taskClick = $(this).siblings(".inputLabel").html();
 		let editedItem = {
 			"task": taskClick,
-			"isCompleted": !updatedIsCompleted
+			"isCompleted": !updatedIsCompleted,
+			"uid": uid
 		};
 		FbAPI.editTodo(apiKeys, itemId, editedItem).then( (response)=>{
 			putTodoInDOM();
 		});
 	});
+	//Register Button
+	$("#registerButton").on("click", function(){
+		let email = $("#inputEmail").val();
+		let password = $("#inputPassword").val();
+		let username = $("#inputUsername").val();
+		let user = {
+			"email": email,
+			"password": password
+		};
+		FbAPI.registerUser(user).then( (registerResponse)=>{
+			console.log("response from register", registerResponse);
+			let newUser = {
+				"username": username,
+				"uid": registerResponse.uid
+			};
+			return FbAPI.addUser(apiKeys, newUser);
+		}).then( (userResponse)=>{
+			console.log("userResponse", userResponse);
+			return FbAPI.loginUser(user);
+		}).then( (loginResponse)=>{
+			console.log("response from login/register", loginResponse);
+			uid = loginResponse.uid;
+			createLogoutButton();
+			putTodoInDOM();
+			$("#login-container").addClass("hide");
+			$("#todo-container").removeClass("hide");
+
+		});
+	});
+	//Login Button
+	$("#loginButton").on("click", function(){
+		let user = {
+			"email": $("#inputEmail").val(),
+			"password": $("#inputPassword").val()
+		};
+		FbAPI.loginUser(user).then( (response)=>{
+			console.log("login response", response);
+			uid = response.uid;
+			createLogoutButton();
+			putTodoInDOM();
+			$("#login-container").addClass("hide");
+			$("#todo-container").removeClass("hide");
+		});	
+	});
+	//Logout Button
+	$("#logout-container").on("click", "#logoutButton", function(event){
+		console.log("logout", event);
+		FbAPI.logoutUser();
+		uid = "";
+		$("#inputEmail").val("");
+		$("#inputPassword").val("");
+		$("#inputUsername").val("");
+		$("#incomplete-tasks").html("");
+		$("#completed-tasks").html("");
+		$("#login-container").removeClass("hide");
+		$("#todo-container").addClass("hide");
+	});
 
 });
-
-// //variables
-// var incompleteList = $("#toDoList");
-// var completeList = $("#completedList");
-// $(document).ready(()=>{
-// 	ToDoList.loadTodoList();
-
-// //Get User Input for To Do Item
-// 	$('#input-todo').keypress( (event)=>{
-// 		if (event.which == 13){
-// 			let enteredToDo = $('#input-todo').val();
-// 			console.log("event", event);
-// 			console.log("enteredToDo", enteredToDo);
-// 			ToDoList.addToDoListItem(enteredToDo);
-// 		} 
-// 	});
-// 	$('#getToDo-button').on("click", (event)=>{
-// 		let enteredToDo = $('#input-todo').val();
-// 		ToDoList.addToDoListItem(enteredToDo);
-// 	});
-	
-	
-// });
-// //Add buttons and push to DOM
-// function printList(listItems){
-// 	completeList.html("");
-// 	incompleteList.html("");
-// 	console.log("listItems", listItems);
-// 	$.each(listItems, (index, item)=> {
-// 		if (item.completed == "true"){
-// 			completeList.append(`<div class="card" id="${index}"><div class="form-check"><input class="form-check-input "type="checkbox" value="" checked="true"><p
-// 		  			 	class="card-text"><del>Item: ${
-// 		  			 	item.item}</del></p></div><button
-// 		  			 	type="submit" class="btn 
-// 		  			 	btn-primary" id="deleteBtn">
-// 		  			 	Delete Item</button><button 
-// 		  			 	type="submit" class="btn 
-// 		  			 	btn-primary" id="editBtn">
-// 		  			 	Edit Item</button></div>`);
-// 		} else {
-// 			incompleteList.append(`<div class="card" id="${index}"><div class="form-check">
-// 		  			 	<input 
-// 		  			 	class="form-check-input"
-// 		  			 	type="checkbox" value="" checked="false"><p
-// 		  			 	class="card-text">Item: ${
-// 		  			 	item.item}</p></div><button
-// 		  			 	type="submit" class="btn 
-// 		  			 	btn-primary" id="deleteBtn">
-// 		  			 	Delete Item</button><button 
-// 		  			 	type="submit" class="btn 
-// 		  			 	btn-primary" id="editBtn">
-// 		  			 	Edit Item</button></div>`);
-// 				}
-// 	});
-// }
-// //Get user clicks
-// 	//Change in check value
-// $(document).on("click", (event)=>{
-// 		console.log("event", event.target.parentNode);
-// 		//Delete item
-// 		if (event.target.id === "deleteBtn") {
-// 			let removeItem = event.target.parentNode;
-// 			let removeId = event.target.parentNode.id;
-// 			List.removeFromDom(removeItem);
-// 			List.removeFromArray(removeId);
-// 		}
-// 		//Edit item
-// 		if (event.target.id === "editBtn"){
-// 			let editId = event.target.parentNode.id;
-// 			let editParagraph = event.target.parentNode.children[0];
-// 			let editItem = editParagraph.children[1].innerHTML;
-// 			$("#input-todo").value = editItem;
-// 			List.editFromArray(editId, editItem);
-// 		}
-// 		// if (event.target.type === "checkbox"){
-// 		// 	if (event.target.checked === "false"){
-
-// 		// 	}
-// 		// }
-// 		//Move item to Completed
-
-
-// });
-
-
-
-// //Move item to Completed
-
-// //Move item back to ToDo
-

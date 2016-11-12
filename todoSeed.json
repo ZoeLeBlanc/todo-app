@@ -2,19 +2,33 @@
 	"items": {
 		"item0":{
 			"task": "mow the lawn",
-			"isCompleted": true
+			"isCompleted": true,
+			"uid": "7UVvczFKHsUC7PmAltkJompmsep1"
 		},
 		"item1":{
 			"task": "feed the dogs",
-			"isCompleted": false	
+			"isCompleted": false,
+			"uid": "7UVvczFKHsUC7PmAltkJompmsep1"	
 		},
 		"item2":{
 			"task": "buy groceries",
-			"isCompleted": false
+			"isCompleted": false,
+			"uid": "9NpQDSIVoKYxhJR7Y5qWI6EmkF12"
 		},
 		"item3":{
 			"task": "pay the bills",
-			"isCompleted": false
+			"isCompleted": false,
+			"uid": "9NpQDSIVoKYxhJR7Y5qWI6EmkF12"
+		}
+	},
+	"users": {
+		"user1":{
+			"username": "Zoe",
+			"uid": "9NpQDSIVoKYxhJR7Y5qWI6EmkF12"
+		},
+		"user2":{
+			"username": "Camille",
+			"uid": "7UVvczFKHsUC7PmAltkJompmsep1"
 		}
 	}
 }
